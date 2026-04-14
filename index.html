@@ -102,6 +102,8 @@
                     <div>答對：<span id="result-correct" class="font-bold text-green-500 text-xl">0</span> 題</div>
                     <div>答錯：<span id="result-wrong" class="font-bold text-red-500 text-xl">0</span> 題</div>
                 </div>
+                
+                <!-- 動態鼓勵訊息容器 -->
                 <p id="result-message" class="text-xl font-medium text-pink-600 mb-8">-</p>
                 <p id="save-status" class="text-sm text-blue-600 mb-4 font-medium"></p>
                 
@@ -444,6 +446,133 @@
             }, 400);
         }
 
+        /* --- 遊戲闖關版隨機鼓勵訊息系統 --- */
+        const gameMessages = {
+            perfect: [
+                "👑 完美通關！你已經是這一關的王者了！",
+                "🏆 全對達成！這關完全難不倒你！",
+                "✨ 傳說級表現！你把所有重點都掌握住了！",
+                "🔥 滿分破關成功！你的實力真的超強！"
+            ],
+            master: [
+                "🌟 超強表現！差一點就完美通關了！",
+                "⚔️ 高手出招！你已經非常接近滿分王者！",
+                "🎯 命中率超高！再一點點就能直達滿分！",
+                "🚀 你已經進入高手區，繼續挑戰吧！"
+            ],
+            advanced: [
+                "🛡️ 穩定闖關中！你已經掌握大部分重點了！",
+                "🎮 很棒！這一關你已經打得很不錯了！",
+                "🌈 表現亮眼！再補強幾個小地方就更完美了！",
+                "💎 你已經很接近高分區，再衝一下！"
+            ],
+            improving: [
+                "💪 你已經快要升級成高手了，再努力一下！",
+                "🧩 這一關你已經破解不少重點，再複習一下更穩！",
+                "🚩 表現不錯！再把幾個觀念補起來就更強了！",
+                "🌟 已經有不錯基礎，繼續挑戰會越來越熟！"
+            ],
+            pass: [
+                "🎉 成功破關！你已經完成這一關的基本挑戰！",
+                "👍 恭喜過關！再多練幾次會更有信心！",
+                "🪜 你已經跨過這一關門檻，繼續往上升級吧！",
+                "📘 基本關卡完成！接下來就是往更高分邁進！"
+            ],
+            retry: [
+                "🔄 這一關還差一點點，看看解析後再挑戰一次吧！",
+                "🛠️ 別急，你正在累積經驗值，下一次會更好！",
+                "🌱 每一次作答都在升級，先看解析再出發！",
+                "🎯 你已經在進步中了，再試一次一定會更好！"
+            ],
+            beginner: [
+                "🎮 歡迎來到新手村！先熟悉重點，再出發挑戰吧！",
+                "💡 沒關係，這就是升級的開始，先看解析最重要！",
+                "🌟 每個高手都是從新手開始的，再試一次吧！",
+                "🔥 先把基礎打穩，你一定可以越來越強！"
+            ]
+        };
+
+        // 針對錯題重做的專屬鼓勵訊息
+        const retryMessages = {
+            perfect: [
+                "🎉 復仇成功！所有錯題都被你完美消滅了！",
+                "🔥 漂亮！你成功戰勝了原本不熟的觀念！",
+                "👑 完美逆襲！錯題全部轉化為你的得分了！",
+                "✨ 太棒了！把錯誤變成滿分，你辦到了！"
+            ],
+            master: [
+                "🌟 進步神速！絕大部分的錯題都已經被你攻克！",
+                "⚔️ 漂亮的反擊！只差一點點就能把錯題全滅！",
+                "🛡️ 觀念越來越穩了！錯題的威脅幾乎解除！",
+                "🚀 吸收力超強！你已經把失分變得分了！"
+            ],
+            advanced: [
+                "🚀 幹得好！你已經把很多錯題變成得分了！",
+                "💎 觀念越來越清晰了，繼續保持這個氣勢！",
+                "🎯 命中率大幅提升！錯題重做果然很有效果！",
+                "💡 破除盲點！你正在快速掌握這些難題！"
+            ],
+            improving: [
+                "💪 很好的開始！你正在一步步把不懂的地方弄懂！",
+                "🧩 拼圖漸漸完整了，多看幾次解析會更熟練！",
+                "🌟 看到進步了！繼續消滅剩下的錯題吧！",
+                "📈 經驗值持續累積中！下一次一定會更好！"
+            ],
+            pass: [
+                "👏 跨過門檻！你已經慢慢找回手感了！",
+                "👍 答對越來越多題了，複習確實有效！",
+                "📘 有進步就是好事！繼續把不懂的地方看熟！",
+                "🔧 抓漏成功！觀念的漏洞正在被你補齊！"
+            ],
+            retry: [
+                "🔄 面對錯題本來就需要時間，不用急，再看一次解析！",
+                "🌱 每錯一次都是學習的機會，你已經比上次更強了！",
+                "🛠️ 錯題就是幫你抓漏的幫手，我們再補強一次就懂了！",
+                "💡 勇敢面對錯題就是進步的開始，慢慢來！"
+            ],
+            beginner: [
+                "🎮 卡關了嗎？先別氣餒，把這幾題解析當作秘笈多看兩遍！",
+                "🛡️ 這些題目確實有難度，先休息一下再戰也沒關係！",
+                "🚩 沒事沒事，大魔王總是比較難打，再看一次詳解！",
+                "💪 最難的往往是最寶貴的經驗，搞懂這幾題你就升級了！"
+            ]
+        };
+
+        function getRandomMessage(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function showResultMessage(scoreCalc) {
+            const msgEl = document.getElementById("result-message");
+            if (!msgEl) return;
+
+            // 根據是否為錯題重做模式，選擇對應的訊息庫
+            const currentMessages = isRetryMode ? retryMessages : gameMessages;
+
+            if (scoreCalc === 100) {
+                msgEl.textContent = getRandomMessage(currentMessages.perfect);
+                msgEl.className = "text-xl font-bold text-green-600 mb-8";
+            } else if (scoreCalc >= 90) {
+                msgEl.textContent = getRandomMessage(currentMessages.master);
+                msgEl.className = "text-xl font-bold text-emerald-600 mb-8";
+            } else if (scoreCalc >= 80) {
+                msgEl.textContent = getRandomMessage(currentMessages.advanced);
+                msgEl.className = "text-xl font-bold text-blue-600 mb-8";
+            } else if (scoreCalc >= 70) {
+                msgEl.textContent = getRandomMessage(currentMessages.improving);
+                msgEl.className = "text-xl font-bold text-cyan-600 mb-8";
+            } else if (scoreCalc >= 60) {
+                msgEl.textContent = getRandomMessage(currentMessages.pass);
+                msgEl.className = "text-xl font-bold text-yellow-600 mb-8";
+            } else if (scoreCalc >= 40) {
+                msgEl.textContent = getRandomMessage(currentMessages.retry);
+                msgEl.className = "text-xl font-bold text-orange-500 mb-8";
+            } else {
+                msgEl.textContent = getRandomMessage(currentMessages.beginner);
+                msgEl.className = "text-xl font-bold text-pink-600 mb-8";
+            }
+        }
+
         /* --- 結算與解析 --- */
         function showResults() {
             document.getElementById("quiz-section").classList.add("hidden");
@@ -463,11 +592,8 @@
             document.getElementById("tag-mode-top").textContent = `${isRetryMode ? "錯題重做" : "完整測驗"} - ${currentSelectedTopic}`;
             document.getElementById("tag-attempt").textContent = `測驗次數：第 ${attemptCount} 次`;
 
-            const msgEl = document.getElementById("result-message");
-            if (scoreCalc === 100) { msgEl.textContent = "🏆 完美！你已經完全掌握了！"; msgEl.className = "text-xl font-bold text-green-600 mb-8"; }
-            else if (scoreCalc >= 80) { msgEl.textContent = "🌟 非常優秀！繼續保持！"; msgEl.className = "text-xl font-bold text-blue-600 mb-8"; }
-            else if (scoreCalc >= 60) { msgEl.textContent = "👍 及格了，但還有進步空間喔！"; msgEl.className = "text-xl font-bold text-yellow-600 mb-8"; }
-            else { msgEl.textContent = "💪 別氣餒，看看下方解析再試一次吧！"; msgEl.className = "text-xl font-bold text-pink-600 mb-8"; }
+            // 呼叫獨立函式顯示遊戲闖關版隨機鼓勵訊息
+            showResultMessage(scoreCalc);
 
             // 移除舊的 inline style，改用乾淨的 class 切換
             const retryBtn = document.getElementById("btn-retry");
